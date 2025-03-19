@@ -1,0 +1,129 @@
+
+{
+  "companies": [
+    {
+      "id": "company-1",
+      "name": "Standard Bank",
+      "logo": "https://logo.clearbit.com/standardbank.co.za",
+      "location": "Johannesburg",
+      "industry": "Banking",
+      "size": "10,000+ employees",
+      "rating": 4.2,
+      "reviewCount": 324,
+      "trending": true
+    },
+    {
+      "id": "company-2",
+      "name": "Discovery Limited",
+      "logo": "https://logo.clearbit.com/discovery.co.za",
+      "location": "Sandton",
+      "industry": "Insurance",
+      "size": "5,000-10,000 employees",
+      "rating": 4.0,
+      "reviewCount": 213,
+      "new": true
+    },
+    {
+      "id": "company-3",
+      "name": "Woolworths Holdings",
+      "logo": "https://logo.clearbit.com/woolworths.co.za",
+      "location": "Cape Town",
+      "industry": "Retail",
+      "size": "5,000-10,000 employees",
+      "rating": 3.8,
+      "reviewCount": 186
+    },
+    {
+      "id": "company-4",
+      "name": "MTN Group",
+      "logo": "https://logo.clearbit.com/mtn.com",
+      "location": "Johannesburg",
+      "industry": "Telecommunications",
+      "size": "5,000-10,000 employees",
+      "rating": 3.9,
+      "reviewCount": 257
+    },
+    {
+      "id": "company-5",
+      "name": "Sasol Limited",
+      "logo": "https://logo.clearbit.com/sasol.com",
+      "location": "Johannesburg",
+      "industry": "Energy",
+      "size": "10,000+ employees",
+      "rating": 3.7,
+      "reviewCount": 192
+    },
+    {
+      "id": "company-6",
+      "name": "Shoprite Holdings",
+      "logo": "https://logo.clearbit.com/shopriteholdings.co.za",
+      "location": "Cape Town",
+      "industry": "Retail",
+      "size": "10,000+ employees",
+      "rating": 3.5,
+      "reviewCount": 178
+    },
+    {
+      "id": "company-7",
+      "name": "FirstRand",
+      "logo": "https://logo.clearbit.com/firstrand.co.za",
+      "location": "Johannesburg",
+      "industry": "Banking",
+      "size": "5,000-10,000 employees",
+      "rating": 4.1,
+      "reviewCount": 203,
+      "trending": true
+    },
+    {
+      "id": "company-8",
+      "name": "Vodacom Group",
+      "logo": "https://logo.clearbit.com/vodacom.co.za",
+      "location": "Johannesburg",
+      "industry": "Telecommunications",
+      "size": "5,000-10,000 employees",
+      "rating": 3.9,
+      "reviewCount": 245
+    },
+    {
+      "id": "company-9",
+      "name": "Absa Group",
+      "logo": "https://logo.clearbit.com/absa.africa",
+      "location": "Johannesburg",
+      "industry": "Banking",
+      "size": "5,000-10,000 employees",
+      "rating": 3.8,
+      "reviewCount": 231
+    },
+    {
+      "id": "company-10",
+      "name": "Nedbank Group",
+      "logo": "https://logo.clearbit.com/nedbank.co.za",
+      "location": "Johannesburg",
+      "industry": "Banking",
+      "size": "5,000-10,000 employees",
+      "rating": 3.9,
+      "reviewCount": 217
+    },
+    {
+      "id": "company-11",
+      "name": "MultiChoice Group",
+      "logo": "https://logo.clearbit.com/multichoice.com",
+      "location": "Johannesburg",
+      "industry": "Media",
+      "size": "1,000-5,000 employees",
+      "rating": 3.7,
+      "reviewCount": 156,
+      "new": true
+    },
+    {
+      "id": "company-12",
+      "name": "Sanlam",
+      "logo": "https://logo.clearbit.com/sanlam.co.za",
+      "location": "Cape Town",
+      "industry": "Insurance",
+      "size": "5,000-10,000 employees",
+      "rating": 3.8,
+      "reviewCount": 189
+    }
+  ]
+}
