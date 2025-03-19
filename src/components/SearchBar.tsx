@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, MapPin, Tag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface SearchBarProps {
   className?: string;
   variant?: "default" | "ghost";
   placeholder?: string;
+}
+
+interface Company {
+  id: string;
+  name: string;
+  category: string;
 }
 
 const CATEGORIES = [
@@ -38,7 +57,45 @@ const SearchBar = ({
 }: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All Categories");
+  const [open, setOpen] = useState(false);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  // Fetch companies data
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const response = await fetch("/mockCompanyData.json");
+        const data = await response.json();
+        setCompanies(data.companies);
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
+  // Filter companies based on query
+  useEffect(() => {
+    if (query.trim() === "") {
+      setFilteredCompanies([]);
+      return;
+    }
+
+    const lowercaseQuery = query.toLowerCase();
+    const filtered = companies.filter(company => 
+      company.name.toLowerCase().includes(lowercaseQuery)
+    ).slice(0, 5); // Limit to 5 suggestions
+    
+    setFilteredCompanies(filtered);
+    
+    if (filtered.length > 0 && !open) {
+      setOpen(true);
+    }
+  }, [query, companies, open]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +111,17 @@ const SearchBar = ({
       }
       
       navigate(`/companies?${params.toString()}`);
+      setOpen(false);
+    }
+  };
+
+  const handleSelectCompany = (companyName: string) => {
+    setQuery(companyName);
+    setOpen(false);
+    
+    // Focus the input after selection
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   };
 
@@ -67,17 +135,48 @@ const SearchBar = ({
       `}
     >
       <div className="relative flex-1">
-        <Search 
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" 
-          size={18} 
-        />
-        <Input
-          type="text"
-          placeholder={placeholder}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="pl-10 border-none bg-transparent focus-visible:ring-0 shadow-none text-base"
-        />
+        <Popover open={open && filteredCompanies.length > 0} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <div className="relative">
+              <Search 
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" 
+                size={18} 
+              />
+              <Input
+                type="text"
+                placeholder={placeholder}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => {
+                  if (query.trim() && filteredCompanies.length > 0) {
+                    setOpen(true);
+                  }
+                }}
+                className="pl-10 border-none bg-transparent focus-visible:ring-0 shadow-none text-base"
+                ref={inputRef}
+              />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="p-0 w-full" align="start">
+            <Command>
+              <CommandList>
+                <CommandEmpty>No results found</CommandEmpty>
+                <CommandGroup heading="Companies">
+                  {filteredCompanies.map((company) => (
+                    <CommandItem
+                      key={company.id}
+                      onSelect={() => handleSelectCompany(company.name)}
+                      className="flex items-center cursor-pointer"
+                    >
+                      <span>{company.name}</span>
+                      <span className="ml-auto text-xs text-muted-foreground">{company.category}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
       
       <div className="hidden md:block min-w-[180px]">
