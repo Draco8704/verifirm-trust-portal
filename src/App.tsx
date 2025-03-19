@@ -10,6 +10,7 @@ import CompanyProfile from "./pages/CompanyProfile";
 import Pricing from "./pages/Pricing";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import CompanyListing from "./pages/CompanyListing";
 
 // Add framer-motion to dependencies
 import("framer-motion");
@@ -25,6 +26,7 @@ const App = () => (
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/companies" element={<CompanyListing />} />
             <Route path="/company/:id" element={<CompanyProfile />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/login" element={<Login />} />

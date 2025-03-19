@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, MapPin, Users, TrendingUp, Clock } from "lucide-react";
+import { Star, MapPin, Users, TrendingUp, Clock, Tag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +12,7 @@ interface CompanyCardProps {
     logo: string;
     location: string;
     industry: string;
+    category: string;
     size: string;
     rating: number;
     reviewCount: number;
@@ -67,6 +68,10 @@ const CompanyCard = ({ company, className }: CompanyCardProps) => {
               <div className="flex flex-wrap gap-2 mt-3">
                 <Badge variant="secondary" className="font-normal">
                   {company.industry}
+                </Badge>
+                <Badge variant="outline" className="font-normal text-verifirm-blue border-verifirm-blue/30 bg-verifirm-light-blue/10">
+                  <Tag className="h-3 w-3 mr-1" />
+                  {company.category}
                 </Badge>
                 <div className="flex items-center text-xs text-muted-foreground gap-1">
                   <Users className="h-3 w-3" />
