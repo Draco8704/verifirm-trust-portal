@@ -18,6 +18,7 @@ const Index = () => {
       logo: "https://logo.clearbit.com/standardbank.co.za",
       location: "Johannesburg",
       industry: "Banking",
+      category: "Finance", // Added the missing category property
       size: "10,000+ employees",
       rating: 4.2,
       reviewCount: 324,
@@ -29,6 +30,7 @@ const Index = () => {
       logo: "https://logo.clearbit.com/discovery.co.za",
       location: "Sandton",
       industry: "Insurance",
+      category: "Finance", // Added the missing category property
       size: "5,000-10,000 employees",
       rating: 4.0,
       reviewCount: 213,
@@ -40,6 +42,7 @@ const Index = () => {
       logo: "https://logo.clearbit.com/woolworths.co.za",
       location: "Cape Town",
       industry: "Retail",
+      category: "Retail", // Added the missing category property
       size: "5,000-10,000 employees",
       rating: 3.8,
       reviewCount: 186,
