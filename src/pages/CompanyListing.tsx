@@ -88,7 +88,7 @@ const CompanyListing = () => {
           {/* Search Section */}
           <section className="mb-10">
             <div className="text-center mb-6">
-              <h1 className="text-3xl font-bold mb-2">Find the Right Company</h1>
+              <h1 className="text-3xl font-bold mb-2">Vet The Company Before You Sign That Contract</h1>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Search for companies, read reviews, and make informed career decisions
               </p>
