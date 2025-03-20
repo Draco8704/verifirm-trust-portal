@@ -42,30 +42,10 @@ export interface ButtonProps
 }
 
 // Define a new type that combines Button props with Motion props
-type MotionButtonProps = ButtonProps & Omit<HTMLMotionProps<"button">, keyof ButtonProps>;
+// Use Omit to exclude the conflicting properties from HTMLMotionProps
+export type MotionButtonProps = Omit<HTMLMotionProps<"button">, "className" | "onClick" | "onAnimationStart"> & ButtonProps;
 
-// Motion button that wraps the regular button
-const MotionButton = React.forwardRef<HTMLButtonElement, MotionButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : motion.button
-    
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        whileTap={{ scale: 0.98 }} // Add tap animation
-        whileHover={{ 
-          scale: 1.02,
-          transition: { duration: 0.2 }
-        }}
-        {...props}
-      />
-    )
-  }
-)
-MotionButton.displayName = "MotionButton"
-
-// Regular button for when we don't want motion animations
+// Regular button component
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
@@ -79,5 +59,26 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 )
 Button.displayName = "Button"
+
+// Motion button that wraps the regular button
+const MotionButton = React.forwardRef<HTMLButtonElement, MotionButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : motion.button
+    
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        whileTap={{ scale: 0.98 }}
+        whileHover={{ 
+          scale: 1.02,
+          transition: { duration: 0.2 }
+        }}
+        {...props}
+      />
+    )
+  }
+)
+MotionButton.displayName = "MotionButton"
 
 export { Button, MotionButton, buttonVariants }
