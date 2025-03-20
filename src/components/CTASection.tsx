@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { AnimatedButton } from "@/components/ui/animated-button";
 
 const CTASection = () => {
   // Animation variants
@@ -34,14 +35,14 @@ const CTASection = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/signup">
-              <Button size="lg" className="w-full sm:w-auto">
+              <AnimatedButton size="lg" className="w-full sm:w-auto" animation="scale">
                 Get started for free
-              </Button>
+              </AnimatedButton>
             </Link>
             <Link to="/pricing">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
+              <AnimatedButton size="lg" variant="outline" className="w-full sm:w-auto" animation="scale">
                 View pricing plans
-              </Button>
+              </AnimatedButton>
             </Link>
           </div>
         </div>
