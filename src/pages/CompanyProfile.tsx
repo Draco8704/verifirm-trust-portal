@@ -28,6 +28,7 @@ const CompanyProfile = () => {
   const { id } = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(true);
   const [company, setCompany] = useState<any>(null);
+  const [sortedReviews, setSortedReviews] = useState<any[]>([]);
 
   useEffect(() => {
     // In a real app, we would fetch data from API
@@ -123,7 +124,39 @@ const CompanyProfile = () => {
           ]
         };
         
+        // Adding a more negative review for demonstration
+        mockCompany.reviews.push({
+          id: "review-4",
+          title: "Stressful environment with management issues",
+          rating: 2,
+          date: "2023-08-05",
+          position: "Customer Service Representative",
+          location: "Johannesburg",
+          employmentStatus: "Former Employee",
+          pros: "Good salary and benefits package. Some nice colleagues.",
+          cons: "Extremely stressful work environment. Lack of support from management. Unrealistic targets and constant pressure.",
+          advice: "Improve management training and be more realistic with performance expectations.",
+          helpful: 22,
+          verified: true,
+        });
+        
         setCompany(mockCompany);
+        
+        // Sort reviews - negative ratings (1-3) first, then positive ratings (4-5)
+        const negativeSortedReviews = [...mockCompany.reviews].sort((a, b) => {
+          // First separate negative from positive
+          const aIsNegative = a.rating <= 3;
+          const bIsNegative = b.rating <= 3;
+          
+          if (aIsNegative && !bIsNegative) return -1;
+          if (!aIsNegative && bIsNegative) return 1;
+          
+          // If both are in the same category (negative or positive),
+          // sort by rating in ascending order
+          return a.rating - b.rating;
+        });
+        
+        setSortedReviews(negativeSortedReviews);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching company data:", error);
@@ -396,19 +429,24 @@ const CompanyProfile = () => {
                 {/* Reviews List */}
                 <div>
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold">
-                      Employee Reviews
-                      <span className="ml-2 text-lg font-normal text-muted-foreground">
-                        ({company.reviewCount})
-                      </span>
-                    </h2>
+                    <div>
+                      <h2 className="text-2xl font-bold">
+                        Employee Reviews
+                        <span className="ml-2 text-lg font-normal text-muted-foreground">
+                          ({company.reviewCount})
+                        </span>
+                      </h2>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Showing negative reviews first, followed by positive reviews
+                      </p>
+                    </div>
                     <Button variant="outline">
                       Write a Review
                     </Button>
                   </div>
                   
                   <div className="space-y-6">
-                    {company.reviews.map((review: any, index: number) => (
+                    {sortedReviews.map((review: any, index: number) => (
                       <motion.div
                         key={review.id}
                         initial={{ opacity: 0, y: 20 }}
