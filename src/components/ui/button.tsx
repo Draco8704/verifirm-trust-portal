@@ -2,7 +2,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { motion } from "framer-motion"
+import { motion, HTMLMotionProps } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
@@ -41,8 +41,11 @@ export interface ButtonProps
   asChild?: boolean
 }
 
+// Define a new type that combines Button props with Motion props
+type MotionButtonProps = ButtonProps & Omit<HTMLMotionProps<"button">, keyof ButtonProps>;
+
 // Motion button that wraps the regular button
-const MotionButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const MotionButton = React.forwardRef<HTMLButtonElement, MotionButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : motion.button
     
