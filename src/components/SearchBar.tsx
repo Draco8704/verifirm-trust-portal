@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, MapPin, Tag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -62,6 +63,125 @@ const SearchBar = ({
   const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: {
+        duration: 0.3,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.95,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const inputGroupVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const inputVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
+  const categoryVariants = {
+    hidden: { opacity: 0, x: 10 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
+  const locationVariants = {
+    hidden: { opacity: 0, x: 10 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        delay: 0.1
+      }
+    }
+  };
+
+  const buttonVariants = {
+    hidden: { opacity: 0, x: 10 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        delay: 0.2
+      }
+    }
+  };
+
+  const dropdownVariants = {
+    hidden: { opacity: 0, y: -10, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 25
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: -10,
+      scale: 0.95,
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.05,
+        duration: 0.3
+      }
+    }),
+    hover: {
+      scale: 1.02,
+      backgroundColor: "rgba(58, 134, 255, 0.1)",
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
 
   // Fetch companies data
   useEffect(() => {
@@ -126,18 +246,24 @@ const SearchBar = ({
   };
 
   return (
-    <form 
+    <motion.form 
       onSubmit={handleSearch} 
       className={`
         flex items-center w-full max-w-3xl gap-2
         ${variant === "ghost" ? "bg-transparent" : "verifirm-glassmorphism p-2 rounded-xl"}
         ${className || ""}
       `}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
-      <div className="relative flex-1">
+      <motion.div 
+        className="relative flex-1"
+        variants={inputGroupVariants}
+      >
         <Popover open={open && filteredCompanies.length > 0} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <div className="relative">
+            <motion.div className="relative" variants={inputVariants}>
               <Search 
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" 
                 size={18} 
@@ -155,31 +281,53 @@ const SearchBar = ({
                 className="pl-10 border-none bg-transparent focus-visible:ring-0 shadow-none text-base"
                 ref={inputRef}
               />
-            </div>
+            </motion.div>
           </PopoverTrigger>
-          <PopoverContent className="p-0 w-full" align="start">
-            <Command>
-              <CommandList>
-                <CommandEmpty>No results found</CommandEmpty>
-                <CommandGroup heading="Companies">
-                  {filteredCompanies.map((company) => (
-                    <CommandItem
-                      key={company.id}
-                      onSelect={() => handleSelectCompany(company.name)}
-                      className="flex items-center cursor-pointer"
-                    >
-                      <span>{company.name}</span>
-                      <span className="ml-auto text-xs text-muted-foreground">{company.category}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
+          <AnimatePresence>
+            {open && filteredCompanies.length > 0 && (
+              <PopoverContent className="p-0 w-full" align="start" asChild>
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Command>
+                    <CommandList>
+                      <CommandEmpty>No results found</CommandEmpty>
+                      <CommandGroup heading="Companies">
+                        {filteredCompanies.map((company, i) => (
+                          <motion.div
+                            key={company.id}
+                            custom={i}
+                            variants={itemVariants}
+                            initial="hidden"
+                            animate="visible"
+                            whileHover="hover"
+                          >
+                            <CommandItem
+                              onSelect={() => handleSelectCompany(company.name)}
+                              className="flex items-center cursor-pointer"
+                            >
+                              <span>{company.name}</span>
+                              <span className="ml-auto text-xs text-muted-foreground">{company.category}</span>
+                            </CommandItem>
+                          </motion.div>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </motion.div>
+              </PopoverContent>
+            )}
+          </AnimatePresence>
         </Popover>
-      </div>
+      </motion.div>
       
-      <div className="hidden md:block min-w-[180px]">
+      <motion.div 
+        className="hidden md:block min-w-[180px]"
+        variants={categoryVariants}
+      >
         <Select value={category} onValueChange={setCategory}>
           <SelectTrigger className="border-none bg-transparent focus:ring-0 shadow-none">
             <div className="flex items-center gap-2 text-muted-foreground">
@@ -195,17 +343,22 @@ const SearchBar = ({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </motion.div>
       
-      <div className="hidden sm:flex items-center gap-2 pr-2 border-l border-border pl-3">
+      <motion.div 
+        className="hidden sm:flex items-center gap-2 pr-2 border-l border-border pl-3"
+        variants={locationVariants}
+      >
         <MapPin size={18} className="text-muted-foreground" />
         <span className="text-sm text-muted-foreground">South Africa</span>
-      </div>
+      </motion.div>
       
-      <Button type="submit" size="sm" className="shrink-0 px-4">
-        Search
-      </Button>
-    </form>
+      <motion.div variants={buttonVariants}>
+        <Button type="submit" size="sm" className="shrink-0 px-4 hover:scale-[1.02] transition-transform">
+          Search
+        </Button>
+      </motion.div>
+    </motion.form>
   );
 };
 
