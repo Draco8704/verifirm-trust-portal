@@ -2,7 +2,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { motion, HTMLMotionProps } from "framer-motion"
+import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
@@ -41,10 +41,6 @@ export interface ButtonProps
   asChild?: boolean
 }
 
-// Define a new type that combines Button props with Motion props
-// Use Omit to exclude the conflicting properties from HTMLMotionProps
-export type MotionButtonProps = Omit<HTMLMotionProps<"button">, "className" | "onClick" | "onAnimationStart"> & ButtonProps;
-
 // Regular button component
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
@@ -60,20 +56,40 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 )
 Button.displayName = "Button"
 
-// Motion button that wraps the regular button
+// Define a custom type for the motion button that properly handles the animation props
+export interface MotionButtonProps extends ButtonProps {
+  // Add specific Framer Motion properties that we need
+  whileHover?: object;
+  whileTap?: object;
+  initial?: object;
+  animate?: object;
+  exit?: object;
+  transition?: object;
+}
+
+// Motion button component
 const MotionButton = React.forwardRef<HTMLButtonElement, MotionButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, whileHover, whileTap, initial, animate, exit, transition, ...props }, ref) => {
     const Comp = asChild ? Slot : motion.button
+    
+    // Extract motion-specific props
+    const motionProps = {
+      whileHover: whileHover || { 
+        scale: 1.02,
+        transition: { duration: 0.2 }
+      },
+      whileTap: whileTap || { scale: 0.98 },
+      initial,
+      animate,
+      exit,
+      transition
+    }
     
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        whileTap={{ scale: 0.98 }}
-        whileHover={{ 
-          scale: 1.02,
-          transition: { duration: 0.2 }
-        }}
+        {...motionProps}
         {...props}
       />
     )
