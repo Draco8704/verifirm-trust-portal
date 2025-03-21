@@ -1,4 +1,3 @@
-
 import { CheckCircle, Shield, Search, Users, Building, Star, Globe, FileText } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -168,7 +167,7 @@ const Index = () => {
       name: "Sarah Johnson",
       position: "Senior Product Manager",
       company: "TechSolutions",
-      avatar: "https://randomuser.me/api/portraits/women/45.jpg",
+      avatar: "https://randomuser.me/api/portraits/women/28.jpg",
       quote: "Verifirm helped me avoid a toxic workplace and find a company that truly values work-life balance. The verified reviews were spot-on!",
       rating: 5
     },
@@ -177,7 +176,7 @@ const Index = () => {
       name: "David Mkhize",
       position: "Financial Analyst",
       company: "Global Finance",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+      avatar: "https://randomuser.me/api/portraits/men/53.jpg",
       quote: "The detailed company insights on Verifirm gave me accurate expectations about the company culture before I even interviewed.",
       rating: 4
     },
@@ -186,7 +185,7 @@ const Index = () => {
       name: "Thandi Nkosi",
       position: "Marketing Director",
       company: "CreativeMinds",
-      avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+      avatar: "https://randomuser.me/api/portraits/women/57.jpg",
       quote: "As someone who changed careers, Verifirm was invaluable in helping me find companies with supportive environments for career switchers.",
       rating: 5
     }
