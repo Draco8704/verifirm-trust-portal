@@ -1,9 +1,10 @@
 
 import { useState } from "react";
-import { Star, ThumbsUp, Flag, User } from "lucide-react";
+import { Star, ThumbsUp, Flag, User, Shield } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 interface ReviewCardProps {
@@ -40,8 +41,19 @@ const ReviewCard = ({ review, className }: ReviewCardProps) => {
   };
 
   const formatDate = (dateString: string) => {
+    // Only show month and year for anonymity
     const date = new Date(dateString);
-    return format(date, "MMMM d, yyyy");
+    return format(date, "MMMM yyyy");
+  };
+
+  // Create anonymous initials for the avatar
+  const getAnonymousInitials = () => {
+    const position = review.position || "Anonymous User";
+    const words = position.split(" ");
+    if (words.length >= 2) {
+      return `${words[0][0]}${words[1][0]}`.toUpperCase();
+    }
+    return position.substring(0, 2).toUpperCase();
   };
 
   const renderStars = (rating: number) => {
@@ -70,24 +82,33 @@ const ReviewCard = ({ review, className }: ReviewCardProps) => {
               {renderStars(review.rating)}
             </div>
           </div>
-          {review.verified && (
-            <Badge className="bg-verifirm-light-blue text-verifirm-blue">
-              Verified
+          <div className="flex items-center gap-2">
+            {review.verified && (
+              <Badge className="bg-verifirm-light-blue text-verifirm-blue">
+                Verified
+              </Badge>
+            )}
+            <Badge variant="outline" className="flex items-center gap-1">
+              <Shield className="h-3.5 w-3.5" />
+              <span>Anonymous</span>
             </Badge>
-          )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <User className="h-3.5 w-3.5" />
-            <span>{review.position}</span>
+        <div className="flex items-center gap-2 mt-3">
+          <Avatar className="h-8 w-8 bg-muted">
+            <AvatarFallback>{getAnonymousInitials()}</AvatarFallback>
+          </Avatar>
+          
+          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <span>{review.position}</span>
+            </div>
+            <span>•</span>
+            <span>{review.employmentStatus}</span>
+            <span>•</span>
+            <span>{formatDate(review.date)}</span>
           </div>
-          <span>•</span>
-          <span>{review.location}</span>
-          <span>•</span>
-          <span>{review.employmentStatus}</span>
-          <span>•</span>
-          <span>{formatDate(review.date)}</span>
         </div>
 
         <div className="mt-4 space-y-4">
