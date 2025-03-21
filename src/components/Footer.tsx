@@ -22,7 +22,7 @@ const Footer = () => {
         { name: "Blog", href: "#" },
         { name: "Support", href: "#" },
         { name: "Documentation", href: "#" },
-        { name: "Privacy Policy", href: "#" },
+        { name: "POPIA Compliance", href: "/business?tab=compliance" },
       ],
     },
     {
@@ -30,7 +30,7 @@ const Footer = () => {
       links: [
         { name: "About Us", href: "/about" },
         { name: "Careers", href: "#" },
-        { name: "Contact", href: "#" },
+        { name: "Contact", href: "/contact" },
         { name: "Terms of Service", href: "#" },
       ],
     },
@@ -97,8 +97,8 @@ const Footer = () => {
             <Link to="#" className="text-sm text-muted-foreground hover:text-verifirm-blue">
               Terms of Service
             </Link>
-            <Link to="#" className="text-sm text-muted-foreground hover:text-verifirm-blue">
-              Cookie Policy
+            <Link to="/business?tab=compliance" className="text-sm text-muted-foreground hover:text-verifirm-blue">
+              POPIA Compliance
             </Link>
           </div>
         </div>

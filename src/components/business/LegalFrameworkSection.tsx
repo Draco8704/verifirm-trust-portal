@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Shield, Lock, FileText, Book, Gavel } from "lucide-react";
+import { Shield, Lock, FileText, Book, Gavel, Globe } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -16,13 +16,219 @@ const LegalFrameworkSection = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="data-protection" className="w-full">
-        <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full mb-8">
+      <Tabs defaultValue="compliance" className="w-full">
+        <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full mb-8">
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="data-protection">Data Protection</TabsTrigger>
           <TabsTrigger value="moderation">Content Moderation</TabsTrigger>
           <TabsTrigger value="dispute">Dispute Resolution</TabsTrigger>
           <TabsTrigger value="terms">Terms & Policies</TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="compliance">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Card className="border border-border/50">
+              <CardHeader>
+                <div className="w-12 h-12 rounded-full bg-verifirm-blue/10 flex items-center justify-center mb-4">
+                  <Globe className="h-6 w-6 text-verifirm-blue" />
+                </div>
+                <CardTitle>Regulatory Compliance</CardTitle>
+                <CardDescription>Adherence to global and regional privacy laws</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Key Legislation Compliance</h3>
+                  
+                  <div className="rounded-lg border border-border/50 overflow-hidden">
+                    <div className="border-b border-border/50 bg-muted/30 py-2 px-3">
+                      <div className="text-xs font-semibold">South African Protection of Personal Information Act (POPIA)</div>
+                    </div>
+                    <div className="p-3">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <div className="text-xs">Information Officer Designated</div>
+                          <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <div className="text-xs">Privacy Policy POPIA Compliant</div>
+                          <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <div className="text-xs">Data Subject Rights Procedures</div>
+                          <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <div className="text-xs">Data Processing Agreements</div>
+                          <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <div className="text-xs">Security Safeguards</div>
+                          <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    <div className="rounded-lg border border-border/50 overflow-hidden">
+                      <div className="border-b border-border/50 bg-muted/30 py-2 px-3">
+                        <div className="text-xs font-semibold">EU GDPR</div>
+                      </div>
+                      <div className="p-3">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <div className="text-xs">Data Processing Register</div>
+                            <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <div className="text-xs">Right to be Forgotten</div>
+                            <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <div className="text-xs">Data Portability</div>
+                            <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="rounded-lg border border-border/50 overflow-hidden">
+                      <div className="border-b border-border/50 bg-muted/30 py-2 px-3">
+                        <div className="text-xs font-semibold">Other Compliance</div>
+                      </div>
+                      <div className="p-3">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <div className="text-xs">UK Data Protection Act</div>
+                            <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <div className="text-xs">California's CCPA</div>
+                            <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <div className="text-xs">Brazil's LGPD</div>
+                            <Badge variant="outline" className="bg-verifirm-green/10 text-verifirm-green border-verifirm-green/20">Complete</Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <div className="space-y-6">
+              <Card className="border border-border/50">
+                <CardHeader className="pb-3">
+                  <CardTitle>POPIA Compliance Key Components</CardTitle>
+                  <CardDescription>How we adhere to South Africa's privacy law</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="p-3 rounded-md border border-border/50">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-verifirm-blue/20 flex items-center justify-center flex-shrink-0">
+                          <Lock className="h-4 w-4 text-verifirm-blue" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium">Information Processing</h3>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            We only collect and process personal information for specific, explicitly defined purposes. All processing is minimized to what is necessary.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-3 rounded-md border border-border/50">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-verifirm-blue/20 flex items-center justify-center flex-shrink-0">
+                          <Shield className="h-4 w-4 text-verifirm-blue" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium">Reviewer Anonymity</h3>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            All employee reviews are anonymous by default. We employ advanced anonymization techniques to ensure reviewers cannot be identified.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-3 rounded-md border border-border/50">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-verifirm-blue/20 flex items-center justify-center flex-shrink-0">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-verifirm-blue">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium">Data Subject Rights</h3>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            We provide clear mechanisms for users to access, correct, delete or transfer their personal information in compliance with POPIA requirements.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-3 rounded-md border border-border/50">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-verifirm-blue/20 flex items-center justify-center flex-shrink-0">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-verifirm-blue">
+                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium">Information Security</h3>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            We implement comprehensive security measures to protect all personal information from unauthorized access, disclosure, or damage.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="border border-border/50">
+                <CardHeader className="pb-3">
+                  <CardTitle>Information Officer Contact</CardTitle>
+                  <CardDescription>As required by POPIA section 55</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm">Name:</div>
+                      <div className="text-sm font-medium">John Doe</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm">Email:</div>
+                      <div className="text-sm font-medium">privacy@verifirm.com</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm">Phone:</div>
+                      <div className="text-sm font-medium">+27 21 555 0199</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm">Registration:</div>
+                      <div className="text-sm font-medium">Registered with Information Regulator</div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-border/50">
+                      <div className="text-xs text-muted-foreground">
+                        For any concerns regarding your personal information or to exercise your rights under POPIA, please contact our Information Officer directly.
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
         
         <TabsContent value="data-protection">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
