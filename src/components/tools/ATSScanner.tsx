@@ -1,367 +1,518 @@
 
-import { useState, useRef } from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { 
-  Upload, 
+  Search, 
+  FileText, 
   Check, 
-  AlertCircle, 
-  Download, 
-  CheckCircle,
-  Rocket,
-  SearchCheck,
-  File
+  X, 
+  AlertTriangle, 
+  ArrowRight,
+  Download,
+  RefreshCw,
+  ListFilter,
+  Zap,
+  FileUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ATSScanner = () => {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [isScanning, setIsScanning] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [jobDescription, setJobDescription] = useState("");
   const [scanComplete, setScanComplete] = useState(false);
-  const [atsScore, setAtsScore] = useState(0);
-  const [issues, setIssues] = useState<string[]>([]);
-  const [strengths, setStrengths] = useState<string[]>([]);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanScore, setScanScore] = useState(0);
+  const [keywordMatch, setKeywordMatch] = useState(0);
+  const [formatScore, setFormatScore] = useState(0);
+  const [activeTab, setActiveTab] = useState("upload");
+  const [scansLeft, setScansLeft] = useState(5);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
+  // Sample ATS issues
+  const atsIssues = [
+    {
+      type: "format",
+      severity: "high",
+      issue: "Complex formatting detected",
+      description: "Your resume uses tables or columns which can confuse ATS systems",
+      fix: "Use a simple, linear format without tables, columns, or text boxes"
+    },
+    {
+      type: "keyword",
+      severity: "medium",
+      issue: "Missing key skills",
+      description: "The job requires React Native experience but it's not mentioned in your resume",
+      fix: "Add 'React Native' to your skills section and work experience if applicable"
+    },
+    {
+      type: "format",
+      severity: "low",
+      issue: "Non-standard section headings",
+      description: "Using 'Professional Journey' instead of standard 'Experience' heading",
+      fix: "Use standard section headings: Experience, Education, Skills, etc."
+    },
+    {
+      type: "keyword",
+      severity: "high",
+      issue: "Job title mismatch",
+      description: "The job posting is for 'Full Stack Developer' but your resume lists 'Web Developer'",
+      fix: "Update your job title to match the posting if your experience is relevant"
+    }
+  ];
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.type === "application/pdf" || 
-          file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-        setResumeFile(file);
-      } else {
-        toast({
-          title: "Invalid file format",
-          description: "Please upload a PDF or DOCX file",
-          variant: "destructive"
-        });
+  // Sample keyword matches
+  const keywordMatches = [
+    { keyword: "React", inJob: true, inResume: true },
+    { keyword: "Node.js", inJob: true, inResume: true },
+    { keyword: "TypeScript", inJob: true, inResume: false },
+    { keyword: "MongoDB", inJob: true, inResume: false },
+    { keyword: "CI/CD", inJob: true, inResume: true },
+    { keyword: "Agile", inJob: true, inResume: true },
+    { keyword: "Docker", inJob: true, inResume: false },
+    { keyword: "REST API", inJob: true, inResume: true }
+  ];
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
       }
     }
   };
 
-  const triggerFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5
+      }
     }
   };
 
-  const scanResume = () => {
-    if (!resumeFile) {
-      toast({
-        title: "Missing file",
-        description: "Please upload a resume to scan",
-        variant: "destructive"
-      });
-      return;
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      setResumeFile(files[0]);
     }
+  };
+
+  const handleRemoveFile = () => {
+    setResumeFile(null);
+  };
+
+  const handleJobDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setJobDescription(e.target.value);
+  };
+
+  const handleScan = () => {
+    if (!resumeFile || !jobDescription.trim() || scansLeft <= 0) return;
+
+    setIsScanning(true);
+    setScanProgress(0);
+    setActiveTab("results");
 
     // Simulate scanning process
-    setIsScanning(true);
-    setProgress(0);
-    setScanComplete(false);
-    
     const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
+      setScanProgress(prev => {
+        const newProgress = prev + Math.random() * 15;
+        if (newProgress >= 100) {
           clearInterval(interval);
           setIsScanning(false);
           setScanComplete(true);
           
-          // Mock results - would be actual analysis in production
-          const score = Math.floor(Math.random() * 31) + 65; // 65-95 range
-          setAtsScore(score);
+          // Generate random scores for demo
+          setScanScore(Math.floor(Math.random() * 30) + 65); // 65-95 range
+          setKeywordMatch(Math.floor(Math.random() * 40) + 55); // 55-95 range
+          setFormatScore(Math.floor(Math.random() * 25) + 75); // 75-100 range
           
-          // Set mock issues based on score
-          const mockIssues = [];
-          if (score < 85) mockIssues.push("Some key skills are missing or not properly highlighted");
-          if (score < 80) mockIssues.push("Resume format may not be optimally ATS-friendly");
-          if (score < 75) mockIssues.push("Job title inconsistencies detected");
-          if (score < 70) mockIssues.push("Lack of quantifiable achievements");
-          setIssues(mockIssues);
-          
-          // Set mock strengths
-          const mockStrengths = [
-            "Good keyword density for industry standards",
-            "Clear section headings that ATS can recognize",
-            "Contact information is properly formatted",
-            "Education section is well-structured"
-          ];
-          setStrengths(mockStrengths);
-          
+          setScansLeft(prev => prev - 1);
           return 100;
         }
-        return prev + 2;
+        return newProgress;
       });
-    }, 50);
+    }, 500);
   };
 
-  const getScoreCategory = () => {
-    if (atsScore >= 90) return "Excellent";
-    if (atsScore >= 80) return "Good";
-    if (atsScore >= 70) return "Fair";
-    return "Needs Improvement";
-  };
-
-  const getScoreColor = () => {
-    if (atsScore >= 90) return "text-green-600";
-    if (atsScore >= 80) return "text-emerald-600";
-    if (atsScore >= 70) return "text-yellow-600";
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return "text-green-600";
+    if (score >= 60) return "text-amber-600";
     return "text-red-600";
   };
 
+  const getSeverityColor = (severity: string) => {
+    switch(severity) {
+      case "high": return "text-red-600";
+      case "medium": return "text-amber-600";
+      case "low": return "text-blue-600";
+      default: return "text-muted-foreground";
+    }
+  };
+
+  const getSeverityBadge = (severity: string) => {
+    switch(severity) {
+      case "high":
+        return <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200">High</Badge>;
+      case "medium":
+        return <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">Medium</Badge>;
+      case "low":
+        return <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">Low</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
+    }
+  };
+
   return (
-    <Card className="w-full max-w-4xl mx-auto shadow-lg">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-2xl">ATS Resume Scanner</CardTitle>
-            <CardDescription>Check if your resume will pass Applicant Tracking Systems</CardDescription>
-          </div>
-          <Badge variant="outline" className="gap-1 px-2 py-1">
-            <SearchCheck className="h-3.5 w-3.5" />
-            <span>Free Tool</span>
-          </Badge>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-6">
-        {!scanComplete ? (
-          <div className="space-y-6">
-            <div 
-              className="border-2 border-dashed rounded-lg p-10 text-center cursor-pointer hover:bg-muted/50 transition-colors"
-              onClick={triggerFileInput}
-            >
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept=".pdf,.docx" 
-                onChange={handleFileUpload}
-              />
-              <div className="flex flex-col items-center gap-3">
-                <Upload className="h-10 w-10 text-muted-foreground" />
-                <h3 className="text-lg font-medium">Upload your resume</h3>
-                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                  Drag and drop or click to upload your resume (PDF or DOCX format)
-                </p>
-              </div>
+    <motion.div
+      className="w-full max-w-4xl mx-auto"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <Card className="shadow-lg border-verifirm-blue/10">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl">ATS Scanner</CardTitle>
+              <CardDescription>Analyze your resume's compatibility with ATS systems</CardDescription>
             </div>
+            <Badge variant="outline" className="px-3 py-1 gap-1">
+              <Search className="h-3.5 w-3.5" />
+              <span>{scansLeft} scans remaining</span>
+            </Badge>
+          </div>
+        </CardHeader>
 
-            {resumeFile && (
-              <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                <File className="h-8 w-8 text-verifirm-blue" />
-                <div className="flex-1">
-                  <p className="font-medium truncate">{resumeFile.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {(resumeFile.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
-                </div>
-                <Check className="h-5 w-5 text-green-500" />
-              </div>
-            )}
+        <CardContent className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-2 mb-4">
+              <TabsTrigger value="upload">Upload</TabsTrigger>
+              <TabsTrigger value="results">Scan Results</TabsTrigger>
+            </TabsList>
 
-            <div className="flex flex-col items-center justify-center gap-3">
-              <Button 
-                onClick={scanResume} 
-                disabled={!resumeFile || isScanning} 
-                className="gap-2"
-                size="lg"
+            <TabsContent value="upload" className="space-y-6">
+              <motion.div 
+                className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-10 text-center space-y-4"
+                variants={itemVariants}
               >
-                {isScanning ? (
-                  <>Scanning Resume <span className="animate-pulse">...</span></>
+                {resumeFile ? (
+                  <div className="space-y-4">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-verifirm-blue/10">
+                      <FileText className="h-8 w-8 text-verifirm-blue" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{resumeFile.name}</p>
+                      <p className="text-sm text-muted-foreground">{(resumeFile.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleRemoveFile}
+                      className="gap-2"
+                    >
+                      <X className="h-4 w-4" />
+                      Remove
+                    </Button>
+                  </div>
                 ) : (
                   <>
-                    <SearchCheck className="h-5 w-5" />
-                    Scan Resume
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted">
+                      <FileUp className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-lg font-medium">Upload your resume</h3>
+                    <p className="text-muted-foreground max-w-md mx-auto">
+                      We'll analyze your resume against the job description for ATS compatibility
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => document.getElementById('resume-upload-ats')?.click()}
+                      className="gap-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      Browse Files
+                    </Button>
+                    <input 
+                      type="file" 
+                      id="resume-upload-ats" 
+                      className="hidden" 
+                      accept=".pdf,.docx" 
+                      onChange={handleFileUpload}
+                    />
                   </>
                 )}
-              </Button>
-              <p className="text-sm text-muted-foreground">
-                Our ATS scanner will analyze your resume for compatibility with major ATS systems
-              </p>
-            </div>
+              </motion.div>
 
-            {isScanning && (
-              <div className="space-y-2">
-                <Progress value={progress} className="h-2" />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Analyzing format...</span>
-                  <span>{progress}%</span>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex flex-col items-center justify-center p-6 border rounded-lg bg-muted/10">
-                <h3 className="text-lg font-medium mb-3">ATS Compatibility Score</h3>
-                <div className="relative inline-flex">
-                  <svg className="w-36 h-36" viewBox="0 0 100 100">
-                    <circle 
-                      className="text-muted stroke-current" 
-                      strokeWidth="10" 
-                      cx="50" 
-                      cy="50" 
-                      r="40" 
-                      fill="transparent"
-                    ></circle>
-                    <circle 
-                      className={`stroke-current ${atsScore >= 90 ? 'text-green-500' : 
-                                                   atsScore >= 80 ? 'text-emerald-500' : 
-                                                   atsScore >= 70 ? 'text-yellow-500' : 
-                                                   'text-red-500'}`}
-                      strokeWidth="10" 
-                      strokeLinecap="round" 
-                      cx="50" 
-                      cy="50" 
-                      r="40" 
-                      fill="transparent"
-                      strokeDasharray={`${atsScore * 2.51} 251.2`}
-                      strokeDashoffset="0"
-                      transform="rotate(-90 50 50)"
-                    ></circle>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className={`text-3xl font-bold ${getScoreColor()}`}>{atsScore}</span>
-                  </div>
-                </div>
-                <p className={`font-medium mt-2 ${getScoreColor()}`}>
-                  {getScoreCategory()}
+              <motion.div variants={itemVariants} className="space-y-2">
+                <h3 className="text-sm font-medium">Job Description</h3>
+                <Textarea 
+                  placeholder="Paste the job description here..." 
+                  className="min-h-32"
+                  value={jobDescription}
+                  onChange={handleJobDescriptionChange}
+                />
+                <p className="text-xs text-muted-foreground">
+                  For accurate results, include the complete job description with requirements and qualifications
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {atsScore >= 80 
-                    ? "Your resume is well-optimized for ATS" 
-                    : "Your resume needs optimization for ATS"}
-                </p>
-              </div>
+              </motion.div>
 
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-medium mb-2">Resume Strengths</h3>
-                  <ul className="space-y-2">
-                    {strengths.map((strength, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span>{strength}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <motion.div variants={itemVariants} className="pt-4">
+                <Button 
+                  className="w-full gap-2" 
+                  size="lg"
+                  disabled={!resumeFile || !jobDescription.trim() || isScanning || scansLeft <= 0}
+                  onClick={handleScan}
+                >
+                  {isScanning ? (
+                    <>Scanning your resume...</>
+                  ) : (
+                    <>
+                      <Search className="h-4 w-4" />
+                      Start ATS Scan
+                    </>
+                  )}
+                </Button>
 
-                {issues.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
-                      Areas for Improvement
-                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-                        {issues.length} issues found
-                      </Badge>
-                    </h3>
-                    <ul className="space-y-2">
-                      {issues.map((issue, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <AlertCircle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                          <span>{issue}</span>
-                        </li>
-                      ))}
-                    </ul>
+                {isScanning && (
+                  <div className="mt-4 space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Scanning...</span>
+                      <span>{Math.round(scanProgress)}%</span>
+                    </div>
+                    <Progress value={scanProgress} className="h-2" />
+                    <div className="text-xs text-muted-foreground">
+                      {scanProgress < 30 ? "Analyzing document structure..." : 
+                       scanProgress < 60 ? "Extracting keywords from job description..." : 
+                       scanProgress < 90 ? "Comparing keywords and formatting..." : 
+                       "Preparing detailed results..."}
+                    </div>
                   </div>
                 )}
-              </div>
-            </div>
+              </motion.div>
+            </TabsContent>
 
-            <div className="border rounded-lg p-6 bg-verifirm-blue/5">
-              <h3 className="text-lg font-medium mb-4">Next Steps for ATS Success</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-verifirm-blue/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-sm font-medium text-verifirm-blue">1</span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Optimize Your Resume</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Use our AI-powered Resume Optimizer tool to improve your ATS compatibility score.
-                      </p>
-                    </div>
-                  </div>
+            <TabsContent value="results" className="space-y-6">
+              {scanComplete ? (
+                <motion.div variants={containerVariants} className="space-y-6">
+                  <motion.div variants={itemVariants} className="grid grid-cols-3 gap-4">
+                    <Card className="bg-muted/30">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-base">Overall ATS Score</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-center">
+                          <span className={`text-4xl font-bold ${getScoreColor(scanScore)}`}>{scanScore}%</span>
+                          <div className="mt-2">
+                            <Progress value={scanScore} className="h-2" />
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {scanScore >= 80 ? "Great! Your resume is ATS-friendly" : 
+                             scanScore >= 60 ? "Decent, but improvements recommended" : 
+                             "Needs significant improvements"}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="bg-muted/30">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-base">Keyword Match</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-center">
+                          <span className={`text-4xl font-bold ${getScoreColor(keywordMatch)}`}>{keywordMatch}%</span>
+                          <div className="mt-2">
+                            <Progress value={keywordMatch} className="h-2" />
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {keywordMatch >= 80 ? "Excellent keyword alignment" : 
+                             keywordMatch >= 60 ? "Some important keywords are missing" : 
+                             "Many critical keywords are missing"}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="bg-muted/30">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-base">Format Score</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-center">
+                          <span className={`text-4xl font-bold ${getScoreColor(formatScore)}`}>{formatScore}%</span>
+                          <div className="mt-2">
+                            <Progress value={formatScore} className="h-2" />
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {formatScore >= 80 ? "Your resume format is ATS-friendly" : 
+                             formatScore >= 60 ? "Format issues may affect ATS parsing" : 
+                             "Significant format issues detected"}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                   
-                  <div className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-verifirm-blue/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-sm font-medium text-verifirm-blue">2</span>
+                  <motion.div variants={itemVariants} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-medium">ATS Issues Found</h3>
+                      <Button variant="outline" size="sm" className="gap-1">
+                        <ListFilter className="h-4 w-4" />
+                        Filter
+                      </Button>
                     </div>
-                    <div>
-                      <h4 className="font-medium">Tailor to Job Descriptions</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Customize your resume for specific job applications to improve keyword matching.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-verifirm-blue/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-sm font-medium text-verifirm-blue">3</span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Use Quick Apply</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Apply to multiple companies with our optimized resume using one-click applications.
-                      </p>
-                    </div>
-                  </div>
+                    
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Issue</TableHead>
+                          <TableHead>Severity</TableHead>
+                          <TableHead className="hidden md:table-cell">Description</TableHead>
+                          <TableHead>Recommended Fix</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {atsIssues.map((issue, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">
+                              <div className="flex items-center gap-2">
+                                {issue.type === "format" ? (
+                                  <FileText className="h-4 w-4 text-muted-foreground" />
+                                ) : (
+                                  <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                                )}
+                                <span>{issue.issue}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>{getSeverityBadge(issue.severity)}</TableCell>
+                            <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                              {issue.description}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex justify-between items-center gap-2 text-sm">
+                                <span className="text-verifirm-blue">{issue.fix}</span>
+                                <ArrowRight className="h-4 w-4 text-muted-foreground hidden md:block" />
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </motion.div>
                   
-                  <div className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-verifirm-blue/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-sm font-medium text-verifirm-blue">4</span>
+                  <motion.div variants={itemVariants} className="space-y-3">
+                    <h3 className="text-lg font-medium">Keyword Analysis</h3>
+                    <div className="border rounded-lg overflow-hidden">
+                      <div className="grid grid-cols-3 gap-4 p-4 bg-muted/30 border-b">
+                        <div className="font-medium">Keyword</div>
+                        <div className="font-medium">In Job Description</div>
+                        <div className="font-medium">In Your Resume</div>
+                      </div>
+                      <div className="divide-y">
+                        {keywordMatches.map((item, index) => (
+                          <div key={index} className="grid grid-cols-3 gap-4 p-4">
+                            <div>{item.keyword}</div>
+                            <div>
+                              {item.inJob ? (
+                                <Check className="h-4 w-4 text-green-600" />
+                              ) : (
+                                <X className="h-4 w-4 text-red-600" />
+                              )}
+                            </div>
+                            <div>
+                              {item.inResume ? (
+                                <Check className="h-4 w-4 text-green-600" />
+                              ) : (
+                                <X className="h-4 w-4 text-red-600" />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium">Create Custom Messages</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Generate personalized application messages that highlight your key qualifications.
-                      </p>
+                  </motion.div>
+                  
+                  <motion.div variants={itemVariants} className="flex justify-between pt-2">
+                    <Button
+                      variant="outline"
+                      className="gap-2"
+                      onClick={() => setActiveTab("upload")}
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                      Scan Another Resume
+                    </Button>
+                    
+                    <div className="space-x-2">
+                      <Button
+                        variant="outline"
+                        className="gap-2"
+                        onClick={() => {/* Would generate a report */}}
+                      >
+                        <Download className="h-4 w-4" />
+                        Download Report
+                      </Button>
+                      <Button
+                        className="gap-2"
+                        onClick={() => {/* Would redirect to optimizer */}}
+                      >
+                        <Zap className="h-4 w-4" />
+                        Optimize Resume
+                      </Button>
                     </div>
+                  </motion.div>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  variants={itemVariants} 
+                  className="flex flex-col items-center justify-center py-16 text-center space-y-4"
+                >
+                  <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+                    <Search className="h-8 w-8 text-muted-foreground" />
                   </div>
-                </div>
-              </div>
-            </div>
+                  <h3 className="text-lg font-medium">No scan results yet</h3>
+                  <p className="text-muted-foreground max-w-md">
+                    Upload your resume and job description, then click "Start ATS Scan" to analyze your resume's ATS compatibility
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setActiveTab("upload")}
+                  >
+                    Go to Upload
+                  </Button>
+                </motion.div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button variant="outline" className="gap-2 w-full sm:w-auto" onClick={() => {
-                setResumeFile(null);
-                setScanComplete(false);
-              }}>
-                <Upload className="h-4 w-4" />
-                Scan Another Resume
-              </Button>
-              <Button className="gap-2 w-full sm:w-auto">
-                <Rocket className="h-4 w-4" />
-                Optimize This Resume
-              </Button>
-            </div>
+        <CardFooter className="flex-col space-y-4">
+          <div className="w-full h-px bg-border"></div>
+          <div className="flex justify-between items-center w-full text-sm">
+            <p className="text-muted-foreground">
+              ATS Scanner helps ensure your resume passes through automated applicant tracking systems
+            </p>
+            <Button variant="outline" size="sm" className="h-8">
+              Get more scans
+            </Button>
           </div>
-        )}
-      </CardContent>
-
-      <CardFooter className="flex-col space-y-4">
-        <div className="w-full h-px bg-border"></div>
-        <div className="flex justify-between items-center w-full text-sm text-muted-foreground">
-          <p>
-            75% of resumes are rejected by ATS before a human ever sees them
-          </p>
-          <Badge variant="outline" className="gap-1">
-            <Check className="h-3 w-3" /> 
-            <span className="text-xs">Free Tool</span>
-          </Badge>
-        </div>
-      </CardFooter>
-    </Card>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 };
 
