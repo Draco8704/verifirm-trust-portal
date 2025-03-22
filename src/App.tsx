@@ -14,6 +14,7 @@ import CompanyListing from "./pages/CompanyListing";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
 import Business from "./pages/Business";
+import JobseekerTools from "./pages/JobseekerTools";
 
 // Add framer-motion to dependencies
 import("framer-motion");
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/business" element={<Business />} />
+            <Route path="/tools" element={<JobseekerTools />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>

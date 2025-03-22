@@ -1,4 +1,5 @@
-import { CheckCircle, Shield, Search, Users, Building, Star, Globe, FileText } from "lucide-react";
+
+import { CheckCircle, Shield, Search, Users, Building, Star, Globe, FileText, Rocket } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
@@ -11,6 +12,8 @@ import TestimonialSection from "@/components/TestimonialSection";
 import StatsSection from "@/components/StatsSection";
 import FAQSection from "@/components/FAQSection";
 import NewsletterSection from "@/components/NewsletterSection";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   // Featured companies data
@@ -221,6 +224,29 @@ const Index = () => {
       
       <main>
         <Hero />
+        
+        {/* New career tools banner */}
+        <div className="py-6 px-4 bg-verifirm-blue/5 border-y border-verifirm-blue/10">
+          <div className="container mx-auto max-w-7xl">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-verifirm-blue/10 p-2 rounded-full">
+                  <Rocket className="h-6 w-6 text-verifirm-blue" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">New Career Tools Available</h3>
+                  <p className="text-muted-foreground">ATS optimization, resume builder, and more</p>
+                </div>
+              </div>
+              <Link to="/tools">
+                <Button className="gap-2">
+                  Explore Tools <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+        
         <FeaturedCompanies companies={featuredCompanies} />
         <HowItWorksSection steps={steps} />
         <StatsSection stats={stats} />
