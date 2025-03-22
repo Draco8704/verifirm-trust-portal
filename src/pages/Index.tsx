@@ -1,5 +1,5 @@
 
-import { CheckCircle, Shield, Search, Users, Building, Star, Globe, FileText, Rocket } from "lucide-react";
+import { CheckCircle, Shield, Search, Users, Building, Star, Globe, FileText, Rocket, ArrowRight } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";

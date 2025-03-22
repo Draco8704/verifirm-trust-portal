@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { SearchBar } from "@/components/SearchBar";
+import SearchBar from "@/components/SearchBar";
 import { BadgeCheck, ChevronRight, Shield } from "lucide-react";
 
 const Hero = () => {

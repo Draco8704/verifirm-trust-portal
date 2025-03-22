@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Rocket, 
@@ -198,7 +197,7 @@ const QuickApply = () => {
                       </div>
                       <span className="font-medium">{totalApplications - viewedApplications - interviewApplications}</span>
                     </div>
-                    <Progress value={(totalApplications - viewedApplications - interviewApplications) / totalApplications * 100} className="h-2 bg-blue-100" indicatorClassName="bg-blue-500" />
+                    <Progress value={(totalApplications - viewedApplications - interviewApplications) / totalApplications * 100} className="h-2 bg-blue-100" />
                     
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -207,7 +206,7 @@ const QuickApply = () => {
                       </div>
                       <span className="font-medium">{viewedApplications}</span>
                     </div>
-                    <Progress value={viewedApplications / totalApplications * 100} className="h-2 bg-yellow-100" indicatorClassName="bg-yellow-500" />
+                    <Progress value={viewedApplications / totalApplications * 100} className="h-2 bg-yellow-100" />
                     
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -216,7 +215,7 @@ const QuickApply = () => {
                       </div>
                       <span className="font-medium">{interviewApplications}</span>
                     </div>
-                    <Progress value={interviewApplications / totalApplications * 100} className="h-2 bg-green-100" indicatorClassName="bg-green-500" />
+                    <Progress value={interviewApplications / totalApplications * 100} className="h-2 bg-green-100" />
                   </div>
                 </CardContent>
               </Card>
