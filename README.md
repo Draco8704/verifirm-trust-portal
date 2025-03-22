@@ -1,8 +1,18 @@
+
 # Welcome to your Lovable project
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/0e36d31b-4ea2-4577-84c1-cb825523921b
+
+## GitHub Synchronization
+
+This project is configured to automatically sync changes between Lovable and GitHub. Any edits made in Lovable will be pushed to the connected GitHub repository, and vice versa.
+
+To connect your GitHub repository:
+1. In Lovable, go to Settings -> Integrations -> GitHub
+2. Follow the authentication steps
+3. Select the repository you want to sync with
 
 ## How can I edit this code?
 
