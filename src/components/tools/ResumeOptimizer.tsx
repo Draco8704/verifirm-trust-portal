@@ -10,7 +10,10 @@ import {
   Trash,
   AlertCircle,
   Check,
-  ChevronDown
+  ChevronDown,
+  Info,
+  AlertTriangle,
+  CheckCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +22,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import AIModelSelector from "./AIModelSelector";
 
 const ResumeOptimizer = () => {
@@ -31,6 +40,10 @@ const ResumeOptimizer = () => {
   const [optimizationProgress, setOptimizationProgress] = useState(0);
   const [optimizationComplete, setOptimizationComplete] = useState(false);
   const [optimizedContent, setOptimizedContent] = useState("");
+  const [atsScore, setAtsScore] = useState<number>(0);
+  const [keywordScore, setKeywordScore] = useState<number>(0);
+  const [formatScore, setFormatScore] = useState<number>(0);
+  const [optimizationFeedback, setOptimizationFeedback] = useState<string[]>([]);
 
   // Animation variants
   const containerVariants = {
@@ -70,10 +83,16 @@ const ResumeOptimizer = () => {
   };
 
   const handleOptimize = () => {
-    if (!resumeFile || !jobDescription.trim()) return;
+    if (!resumeFile || !jobDescription.trim() || optimizationsLeft <= 0) return;
 
     setIsOptimizing(true);
     setOptimizationProgress(0);
+    
+    // Reset previous results
+    setAtsScore(0);
+    setKeywordScore(0);
+    setFormatScore(0);
+    setOptimizationFeedback([]);
 
     // Simulate optimization process
     const interval = setInterval(() => {
@@ -81,10 +100,52 @@ const ResumeOptimizer = () => {
         const newProgress = prev + Math.random() * 15;
         if (newProgress >= 100) {
           clearInterval(interval);
-          setIsOptimizing(false);
-          setOptimizationComplete(true);
-          setOptimizedContent("Your optimized resume content would appear here after processing by the selected AI model.");
-          setOptimizationsLeft(prev => prev - 1);
+          setTimeout(() => {
+            // Simulate completion and results
+            setIsOptimizing(false);
+            setOptimizationComplete(true);
+            setOptimizedContent("Your optimized resume content would appear here after processing by the selected AI model.");
+            setOptimizationsLeft(prev => prev - 1);
+            
+            // Generate random scores for demo purposes
+            const ats = Math.floor(Math.random() * 15) + 80; // Between 80-95
+            const keyword = Math.floor(Math.random() * 30) + 65; // Between 65-95
+            const format = Math.floor(Math.random() * 10) + 90; // Between 90-100
+            
+            setAtsScore(ats);
+            setKeywordScore(keyword);
+            setFormatScore(format);
+            
+            // Generate feedback based on scores
+            const feedback = [];
+            
+            if (ats > 90) {
+              feedback.push("Excellent ATS compatibility. Your resume will be seen by hiring managers.");
+            } else if (ats > 80) {
+              feedback.push("Good ATS compatibility. Some minor improvements could be made.");
+            } else {
+              feedback.push("Improve formatting to enhance ATS readability.");
+            }
+            
+            if (keyword > 85) {
+              feedback.push("Strong keyword matching with job description.");
+            } else if (keyword > 70) {
+              feedback.push("Consider adding more relevant keywords from the job description.");
+            } else {
+              feedback.push("Add more job-specific terminology to increase keyword matching.");
+            }
+            
+            if (format > 95) {
+              feedback.push("Perfect formatting for ATS systems.");
+            } else {
+              feedback.push("Simplified formatting to ensure ATS compatibility.");
+            }
+            
+            setOptimizationFeedback(feedback);
+            
+            // Automatically switch to results tab
+            setActiveTab("result");
+          }, 500);
           return 100;
         }
         return newProgress;
@@ -100,6 +161,18 @@ const ResumeOptimizer = () => {
     a.download = 'optimized-resume.pdf';
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return "text-green-600";
+    if (score >= 75) return "text-amber-600";
+    return "text-red-600";
+  };
+
+  const getScoreIcon = (score: number) => {
+    if (score >= 90) return <CheckCircle className="h-4 w-4 text-green-600" />;
+    if (score >= 75) return <Info className="h-4 w-4 text-amber-600" />;
+    return <AlertTriangle className="h-4 w-4 text-red-600" />;
   };
 
   return (
@@ -260,23 +333,81 @@ const ResumeOptimizer = () => {
                   <div className="border rounded-lg p-6 bg-muted/30">
                     <h3 className="font-medium mb-4">Optimization Results</h3>
                     <div className="space-y-4">
-                      <div className="flex justify-between">
-                        <span className="text-sm">ATS Compatibility Score</span>
-                        <span className="font-medium text-green-600">92%</span>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">ATS Compatibility Score</span>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs">How well your resume will be parsed by Applicant Tracking Systems</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {getScoreIcon(atsScore)}
+                          <span className={`font-medium ${getScoreColor(atsScore)}`}>{atsScore}%</span>
+                        </div>
                       </div>
-                      <Progress value={92} className="h-2" />
+                      <Progress value={atsScore} className="h-2" />
                       
-                      <div className="flex justify-between">
-                        <span className="text-sm">Keyword Match Score</span>
-                        <span className="font-medium text-amber-600">78%</span>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">Keyword Match Score</span>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs">How well your resume matches keywords from the job description</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {getScoreIcon(keywordScore)}
+                          <span className={`font-medium ${getScoreColor(keywordScore)}`}>{keywordScore}%</span>
+                        </div>
                       </div>
-                      <Progress value={78} className="h-2" />
+                      <Progress value={keywordScore} className="h-2" />
                       
-                      <div className="flex justify-between">
-                        <span className="text-sm">Format Optimization</span>
-                        <span className="font-medium text-verifirm-blue">100%</span>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">Format Optimization</span>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs">How well the resume is formatted for maximum readability</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {getScoreIcon(formatScore)}
+                          <span className={`font-medium ${getScoreColor(formatScore)}`}>{formatScore}%</span>
+                        </div>
                       </div>
-                      <Progress value={100} className="h-2" />
+                      <Progress value={formatScore} className="h-2" />
+                    </div>
+                    
+                    {/* Feedback section */}
+                    <div className="mt-6 space-y-2">
+                      <h4 className="text-sm font-medium">Optimization Feedback</h4>
+                      <ul className="space-y-2">
+                        {optimizationFeedback.map((feedback, index) => (
+                          <li key={index} className="flex items-start gap-2 text-sm">
+                            <Check className="h-4 w-4 text-green-600 mt-0.5" />
+                            <span>{feedback}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                   

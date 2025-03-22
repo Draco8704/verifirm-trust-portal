@@ -106,8 +106,8 @@ const Index = () => {
     },
     {
       icon: CheckCircle,
-      title: "Trusted Platform",
-      description: "We prioritize accuracy and authenticity to help you make informed career decisions."
+      title: "ATS Optimization",
+      description: "Ensure your resume gets past automated screening systems with our AI tools."
     }
   ];
 
@@ -125,13 +125,13 @@ const Index = () => {
     },
     {
       icon: CheckCircle,
-      title: "Make Informed Decisions",
-      description: "Use authentic information to choose the right workplace for your career goals."
+      title: "Optimize Your Resume",
+      description: "Use our AI tools to make your resume ATS-friendly and tailored to specific jobs."
     },
     {
       icon: Users,
-      title: "Share Your Experience",
-      description: "Help others by sharing your own workplace experiences through verified reviews."
+      title: "Apply with Confidence",
+      description: "Apply to jobs knowing you have accurate company insights and an optimized resume."
     }
   ];
 
@@ -205,16 +205,44 @@ const Index = () => {
       answer: "Yes, basic access to company reviews and ratings is free. We also offer premium plans with additional features like salary insights, advanced filtering, and company comparisons."
     },
     {
-      question: "Can companies remove negative reviews?",
-      answer: "No, companies cannot remove reviews. However, they can respond to reviews and flag content that violates our guidelines for our team to review."
+      question: "How does the Resume Optimizer work?",
+      answer: "Our Resume Optimizer uses AI to analyze your resume against job descriptions, identifying keyword gaps and formatting issues that might prevent ATS systems from properly reading your resume. It then suggests improvements to increase your chances of getting past automated screening."
     },
     {
-      question: "How often is company information updated?",
-      answer: "Company profiles and information are updated regularly based on user submissions and our own research team. Review data is updated in real-time as new reviews are submitted."
+      question: "How many resume optimizations do I get for free?",
+      answer: "New users receive 10 free resume optimizations. After that, you can purchase additional optimizations starting at R10 per optimization, with bundle discounts available."
     },
     {
       question: "Can I remain anonymous when posting a review?",
       answer: "Yes, all reviews are posted anonymously. While we verify your employment status, your identity is never revealed to the company or other users."
+    }
+  ];
+
+  // New tools data
+  const tools = [
+    {
+      title: "Resume Optimizer",
+      description: "AI-powered resume optimization for ATS systems",
+      icon: FileText,
+      link: "/tools"
+    },
+    {
+      title: "Salary Comparison",
+      description: "Compare salaries across industries and roles",
+      icon: Star,
+      link: "/tools"
+    },
+    {
+      title: "Company Red Flags",
+      description: "Identify potential workplace issues before applying",
+      icon: Shield,
+      link: "/tools"
+    },
+    {
+      title: "Message Generator",
+      description: "Create personalized application messages",
+      icon: Users,
+      link: "/tools"
     }
   ];
 
@@ -225,7 +253,7 @@ const Index = () => {
       <main>
         <Hero />
         
-        {/* New career tools banner */}
+        {/* Career tools banner with new slogan */}
         <div className="py-6 px-4 bg-verifirm-blue/5 border-y border-verifirm-blue/10">
           <div className="container mx-auto max-w-7xl">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -234,8 +262,8 @@ const Index = () => {
                   <Rocket className="h-6 w-6 text-verifirm-blue" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">New Career Tools Available</h3>
-                  <p className="text-muted-foreground">ATS optimization, resume builder, and more</p>
+                  <h3 className="font-bold text-lg">Uncover the workplace truth. ATS-proof your future.</h3>
+                  <p className="text-muted-foreground">AI-powered resume optimization, salary tools, company red flags detector</p>
                 </div>
               </div>
               <Link to="/tools">
@@ -246,6 +274,33 @@ const Index = () => {
             </div>
           </div>
         </div>
+        
+        {/* Tools Grid Section */}
+        <section className="py-12 px-6 bg-gradient-to-b from-white to-verifirm-blue/5">
+          <div className="container mx-auto max-w-7xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Career Advancement Tools</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Our comprehensive suite of tools helps you make informed career decisions and optimize your job search process
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {tools.map((tool, index) => (
+                <div key={index} className="bg-white rounded-lg shadow-md border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+                  <div className="p-3 rounded-full bg-verifirm-blue/10 inline-block mb-4">
+                    <tool.icon className="h-6 w-6 text-verifirm-blue" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">{tool.title}</h3>
+                  <p className="text-muted-foreground mb-4">{tool.description}</p>
+                  <Link to={tool.link} className="text-verifirm-blue hover:underline flex items-center gap-1">
+                    Try now <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
         
         <FeaturedCompanies companies={featuredCompanies} />
         <HowItWorksSection steps={steps} />
