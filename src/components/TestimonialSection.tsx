@@ -1,5 +1,4 @@
 
-import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -37,7 +36,7 @@ const TestimonialSection = ({ testimonials }: TestimonialSectionProps) => {
   };
 
   return (
-    <section className="py-20 px-6 bg-white">
+    <section className="py-20 px-6 bg-gradient-to-b from-white to-slate-50">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl font-bold mb-4">What People Are Saying</h2>
@@ -50,22 +49,24 @@ const TestimonialSection = ({ testimonials }: TestimonialSectionProps) => {
           {testimonials.map((testimonial) => (
             <div 
               key={testimonial.id}
-              className="verifirm-card p-6 animate-fadeIn"
+              className="bg-white rounded-lg shadow-lg p-8 border border-slate-100 transition-all duration-300 hover:shadow-xl"
             >
-              <Quote className="h-8 w-8 text-verifirm-blue/20 mb-4" />
+              <Quote className="h-10 w-10 text-verifirm-blue/20 mb-4" />
               
-              <p className="italic text-muted-foreground mb-6">
+              <p className="italic text-muted-foreground mb-8 min-h-[100px]">
                 "{testimonial.quote}"
               </p>
               
               <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12 border border-border">
+                <Avatar className="h-14 w-14 border border-slate-200 ring-2 ring-slate-50">
                   <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
-                  <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-verifirm-blue text-white">
+                    {testimonial.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
                 </Avatar>
                 
                 <div>
-                  <h4 className="font-semibold">{testimonial.name}</h4>
+                  <h4 className="font-semibold text-lg">{testimonial.name}</h4>
                   <p className="text-sm text-muted-foreground">
                     {testimonial.position}, {testimonial.company}
                   </p>
