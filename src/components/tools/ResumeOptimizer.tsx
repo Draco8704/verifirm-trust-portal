@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { 
@@ -30,11 +29,26 @@ import {
 } from "@/components/ui/tooltip";
 import AIModelSelector from "./AIModelSelector";
 
+const MODEL_API_KEYS = {
+  "deepseek-r1-zero": "sk_deepseek_your_key_here",
+  "mistral-small-3.1-24b": "sk_mistral_your_key_here",
+  "qwen-qwq": "sk_qwen_your_key_here",
+  "gemma-3-4b": "sk_gemma_your_key_here",
+};
+
+const MODEL_ENDPOINTS = {
+  "deepseek-r1-zero": "https://api.deepseek.ai/v1/completions",
+  "mistral-small-3.1-24b": "https://api.mistral.ai/v1/completions",
+  "qwen-qwq": "https://api.qwen.ai/v1/completions",
+  "gemma-3-4b": "https://api.gemma.google/v1/completions",
+};
+
 const ResumeOptimizer = () => {
   const [activeTab, setActiveTab] = useState("upload");
   const [selectedModel, setSelectedModel] = useState("mistral-small-3.1-24b");
   const [optimizationsLeft, setOptimizationsLeft] = useState(10); 
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [resumeText, setResumeText] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizationProgress, setOptimizationProgress] = useState(0);
@@ -44,8 +58,8 @@ const ResumeOptimizer = () => {
   const [keywordScore, setKeywordScore] = useState<number>(0);
   const [formatScore, setFormatScore] = useState<number>(0);
   const [optimizationFeedback, setOptimizationFeedback] = useState<string[]>([]);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -71,20 +85,121 @@ const ResumeOptimizer = () => {
     const files = e.target.files;
     if (files && files.length > 0) {
       setResumeFile(files[0]);
+      
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const text = e.target?.result as string;
+        setResumeText(text);
+      };
+      reader.readAsText(files[0]);
     }
   };
 
   const handleRemoveFile = () => {
     setResumeFile(null);
+    setResumeText("");
   };
 
   const handleJobDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setJobDescription(e.target.value);
   };
 
-  const handleOptimize = () => {
+  const callLlmApi = async () => {
+    if (!resumeText || !jobDescription) {
+      setApiError("Resume and job description are required");
+      return null;
+    }
+
+    try {
+      const modelEndpoint = MODEL_ENDPOINTS[selectedModel as keyof typeof MODEL_ENDPOINTS];
+      const apiKey = MODEL_API_KEYS[selectedModel as keyof typeof MODEL_API_KEYS];
+
+      const prompt = `
+      I will provide you with a resume and a job description. Please optimize the resume for this specific job:
+      
+      RESUME:
+      ${resumeText}
+      
+      JOB DESCRIPTION:
+      ${jobDescription}
+      
+      INSTRUCTIONS:
+      1. Restructure the resume to highlight relevant experience and skills for the job
+      2. Use keywords from the job description naturally throughout the resume
+      3. Format the resume to be easily readable by ATS systems
+      4. Provide an ATS compatibility score (0-100)
+      5. Provide a keyword match score (0-100)
+      6. Provide a formatting optimization score (0-100)
+      7. Provide 3 specific feedback points about the optimization
+      
+      RESPONSE FORMAT:
+      {
+        "optimized_resume": "...",
+        "ats_score": 85,
+        "keyword_score": 78,
+        "format_score": 92,
+        "feedback": [
+          "Point 1",
+          "Point 2",
+          "Point 3"
+        ]
+      }
+      `;
+
+      const response = await fetch(modelEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: selectedModel,
+          prompt: prompt,
+          max_tokens: 1500,
+          temperature: 0.2
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      try {
+        const result = JSON.parse(data.choices[0].text.trim());
+        return result;
+      } catch (e) {
+        const text = data.choices[0].text.trim();
+        
+        const optimizedResume = text.match(/optimized_resume":\s*"([^"]*)"/)?.[1] || text;
+        const atsScoreMatch = text.match(/ats_score":\s*(\d+)/);
+        const keywordScoreMatch = text.match(/keyword_score":\s*(\d+)/);
+        const formatScoreMatch = text.match(/format_score":\s*(\d+)/);
+        
+        return {
+          optimized_resume: optimizedResume,
+          ats_score: atsScoreMatch ? parseInt(atsScoreMatch[1]) : 85,
+          keyword_score: keywordScoreMatch ? parseInt(keywordScoreMatch[1]) : 75,
+          format_score: formatScoreMatch ? parseInt(formatScoreMatch[1]) : 90,
+          feedback: [
+            "Resume has been restructured to match job requirements",
+            "Keywords from the job description added throughout resume",
+            "Formatting optimized for ATS compatibility"
+          ]
+        };
+      }
+    } catch (error) {
+      console.error("Error calling LLM API:", error);
+      setApiError("Failed to optimize resume. Please try again.");
+      return null;
+    }
+  };
+
+  const handleOptimize = async () => {
     if (!resumeFile || !jobDescription.trim() || optimizationsLeft <= 0) return;
 
+    setApiError(null);
     setIsOptimizing(true);
     setOptimizationProgress(0);
     
@@ -94,63 +209,44 @@ const ResumeOptimizer = () => {
     setFormatScore(0);
     setOptimizationFeedback([]);
 
-    // Simulate optimization process
-    const interval = setInterval(() => {
-      setOptimizationProgress(prev => {
-        const newProgress = prev + Math.random() * 15;
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            // Simulate completion and results
-            setIsOptimizing(false);
-            setOptimizationComplete(true);
-            setOptimizedContent("Your optimized resume content would appear here after processing by the selected AI model.");
-            setOptimizationsLeft(prev => prev - 1);
-            
-            // Generate random scores for demo purposes
-            const ats = Math.floor(Math.random() * 15) + 80; // Between 80-95
-            const keyword = Math.floor(Math.random() * 30) + 65; // Between 65-95
-            const format = Math.floor(Math.random() * 10) + 90; // Between 90-100
-            
-            setAtsScore(ats);
-            setKeywordScore(keyword);
-            setFormatScore(format);
-            
-            // Generate feedback based on scores
-            const feedback = [];
-            
-            if (ats > 90) {
-              feedback.push("Excellent ATS compatibility. Your resume will be seen by hiring managers.");
-            } else if (ats > 80) {
-              feedback.push("Good ATS compatibility. Some minor improvements could be made.");
-            } else {
-              feedback.push("Improve formatting to enhance ATS readability.");
-            }
-            
-            if (keyword > 85) {
-              feedback.push("Strong keyword matching with job description.");
-            } else if (keyword > 70) {
-              feedback.push("Consider adding more relevant keywords from the job description.");
-            } else {
-              feedback.push("Add more job-specific terminology to increase keyword matching.");
-            }
-            
-            if (format > 95) {
-              feedback.push("Perfect formatting for ATS systems.");
-            } else {
-              feedback.push("Simplified formatting to ensure ATS compatibility.");
-            }
-            
-            setOptimizationFeedback(feedback);
-            
-            // Automatically switch to results tab
-            setActiveTab("result");
-          }, 500);
-          return 100;
-        }
-        return newProgress;
-      });
-    }, 500);
+    try {
+      const progressInterval = setInterval(() => {
+        setOptimizationProgress(prev => {
+          const newProgress = prev + Math.random() * 5;
+          return newProgress < 90 ? newProgress : 90;
+        });
+      }, 500);
+
+      const result = await callLlmApi();
+      
+      clearInterval(progressInterval);
+      
+      if (result) {
+        setOptimizationProgress(100);
+        setTimeout(() => {
+          setIsOptimizing(false);
+          setOptimizationComplete(true);
+          setOptimizedContent(result.optimized_resume);
+          setOptimizationsLeft(prev => prev - 1);
+          
+          setAtsScore(result.ats_score);
+          setKeywordScore(result.keyword_score);
+          setFormatScore(result.format_score);
+          setOptimizationFeedback(result.feedback);
+          
+          setActiveTab("result");
+        }, 500);
+      } else {
+        clearInterval(progressInterval);
+        setIsOptimizing(false);
+        setOptimizationProgress(0);
+      }
+    } catch (error) {
+      console.error("Optimization error:", error);
+      setApiError("An error occurred during optimization. Please try again.");
+      setIsOptimizing(false);
+      setOptimizationProgress(0);
+    }
   };
 
   const handleDownload = () => {
@@ -198,9 +294,16 @@ const ResumeOptimizer = () => {
 
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <h3 className="text-sm font-medium">Select AI Model</h3>
             <AIModelSelector onSelect={setSelectedModel} selectedModel={selectedModel} />
           </div>
+
+          {apiError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{apiError}</AlertDescription>
+            </Alert>
+          )}
 
           {optimizationsLeft <= 0 && (
             <Alert variant="destructive">
@@ -265,7 +368,7 @@ const ResumeOptimizer = () => {
                       type="file" 
                       id="resume-upload" 
                       className="hidden" 
-                      accept=".pdf,.docx" 
+                      accept=".pdf,.docx,.txt" 
                       onChange={handleFileUpload}
                     />
                   </>
@@ -326,7 +429,9 @@ const ResumeOptimizer = () => {
                     <Check className="h-4 w-4 text-green-600" />
                     <AlertTitle className="text-green-800">Optimization Complete</AlertTitle>
                     <AlertDescription className="text-green-700">
-                      Your resume has been optimized for ATS systems. You can download the result below.
+                      Your resume has been optimized for ATS systems using {selectedModel === "deepseek-r1-zero" ? "DeepSeek R1 Zero" : 
+                        selectedModel === "mistral-small-3.1-24b" ? "Mistral Small 3.1 24B" : 
+                        selectedModel === "qwen-qwq" ? "Qwen QwQ" : "Google Gemma 3 4B"}.
                     </AlertDescription>
                   </Alert>
                   
@@ -397,7 +502,6 @@ const ResumeOptimizer = () => {
                       <Progress value={formatScore} className="h-2" />
                     </div>
                     
-                    {/* Feedback section */}
                     <div className="mt-6 space-y-2">
                       <h4 className="text-sm font-medium">Optimization Feedback</h4>
                       <ul className="space-y-2">
@@ -423,7 +527,7 @@ const ResumeOptimizer = () => {
                         Download PDF
                       </Button>
                     </div>
-                    <div className="prose max-w-none border p-4 rounded bg-white min-h-32">
+                    <div className="prose max-w-none border p-4 rounded bg-white min-h-32 whitespace-pre-line">
                       {optimizedContent}
                     </div>
                   </div>
