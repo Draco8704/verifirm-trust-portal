@@ -1,5 +1,4 @@
-
-import { CheckCircle, Shield, Search, Users, Building, Star, Globe, FileText, Rocket, ArrowRight } from "lucide-react";
+import { CheckCircle, Shield, Search, Users, Building, Star, Globe, FileText, Rocket, ArrowRight, Linkedin } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
@@ -239,9 +238,9 @@ const Index = () => {
       link: "/tools"
     },
     {
-      title: "Message Generator",
+      title: "LinkedIn Message Generator",
       description: "LinkedIn Message Composer to Hiring Managers",
-      icon: Users,
+      icon: Linkedin,
       link: "/tools"
     }
   ];

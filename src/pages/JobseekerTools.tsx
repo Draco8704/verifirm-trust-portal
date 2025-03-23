@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { 
   FileText, 
@@ -8,7 +7,8 @@ import {
   Search, 
   Rocket, 
   UserCheck,
-  ArrowRight
+  ArrowRight,
+  Linkedin
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,12 +30,10 @@ const JobseekerTools = () => {
   const initialTab = searchParams.get("tool") || "resume-optimizer";
 
   useEffect(() => {
-    // Update URL when tab changes
     const updateTab = (tab: string) => {
       setSearchParams({ tool: tab });
     };
     
-    // Set initial tab in URL if not already set
     if (!searchParams.get("tool")) {
       updateTab(initialTab);
     }
@@ -45,7 +43,6 @@ const JobseekerTools = () => {
     setSearchParams({ tool: value });
   };
   
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -76,8 +73,8 @@ const JobseekerTools = () => {
     },
     {
       id: "message-generator",
-      name: "Message Generator",
-      description: "Create personalized application messages",
+      name: "LinkedIn Message Generator",
+      description: "LinkedIn Message Composer to Hiring Managers",
       icon: MessageSquare,
       component: MessageGenerator,
       new: false
