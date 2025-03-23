@@ -240,7 +240,7 @@ const Index = () => {
     },
     {
       title: "Message Generator",
-      description: "Create personalized application messages",
+      description: "LinkedIn Message Composer to Hiring Managers",
       icon: Users,
       link: "/tools"
     }
