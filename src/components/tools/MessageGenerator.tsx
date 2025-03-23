@@ -13,7 +13,8 @@ import {
   Clipboard,
   ThumbsUp,
   ThumbsDown,
-  Share
+  Share,
+  Linkedin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,34 +41,34 @@ import AIModelSelector from "./AIModelSelector";
 // Sample message templates
 const MESSAGE_TEMPLATES = [
   {
-    id: "general",
-    name: "General Application",
-    description: "A universal message for most job applications",
-    content: "I'm reaching out about the [Position] role at [Company]. With [X] years of experience in [Industry], I've [Key Achievement]. I'm particularly drawn to [Company] because [Company-Specific Reason], and I believe my background in [Relevant Skill] would be valuable to your team. I'd welcome the opportunity to discuss how my experience aligns with your needs."
+    id: "connection",
+    name: "Connection Request",
+    description: "Request to connect with a professional on LinkedIn",
+    content: "Hi [Name], I noticed your profile while browsing [Context/Group/Company]. I'm impressed by your experience in [Industry/Role] and would love to connect to learn more about your work in [Specific Area]. Thanks for considering my request."
   },
   {
-    id: "technical",
-    name: "Technical Role",
-    description: "Highlighting technical skills and achievements",
-    content: "I'm applying for the [Position] position at [Company]. As a [Current Role] with [X] years of experience using [Technologies], I've successfully [Technical Achievement with Metrics]. I'm passionate about [Technical Area] and admire [Company]'s work on [Company Project/Product]. I'm excited about the opportunity to bring my [Key Technical Skill] expertise to your team."
+    id: "job-inquiry",
+    name: "Job Opportunity Inquiry",
+    description: "Reaching out about a specific job opening",
+    content: "Hello [Name], I hope this message finds you well. I recently came across the [Position] opening at [Company] and I'm very interested in this opportunity. With my background in [Relevant Experience], I believe I could bring valuable insights to your team. I'd appreciate the chance to discuss how my skills align with what you're looking for. Thank you for your consideration."
   },
   {
-    id: "creative",
-    name: "Creative Role",
-    description: "Showcasing creativity and portfolio highlights",
-    content: "I'm excited to apply for the [Position] role at [Company]. My portfolio includes work for [Notable Client/Project], where I [Creative Achievement]. What draws me to [Company] is your [Company's Creative Approach], and I'd love to contribute my skills in [Creative Skill] to help you [Company Goal]. I've attached my portfolio and would welcome the chance to discuss how my creative vision aligns with your needs."
+    id: "networking",
+    name: "Networking Introduction",
+    description: "Building professional relationships with peers",
+    content: "Hi [Name], I've been following your contributions in [Industry/Field] and really admire your insights on [Specific Topic]. As someone also working in [Related Field], I'd love to connect and potentially exchange ideas. I recently [Relevant Personal Achievement/Project] and would value your perspective. Would you be open to a brief conversation sometime?"
   },
   {
-    id: "management",
-    name: "Management Position",
-    description: "Emphasizing leadership and strategic skills",
-    content: "I'm interested in the [Position] opportunity at [Company]. As a [Current Role], I've led teams of [Team Size] to [Leadership Achievement with Metrics]. I'm particularly impressed by [Company]'s [Company Initiative/Value], which aligns with my leadership philosophy of [Leadership Approach]. I believe my experience in [Relevant Management Skill] would be valuable in helping your team achieve [Company Objective]."
+    id: "informational-interview",
+    name: "Informational Interview",
+    description: "Request to learn more about someone's role or company",
+    content: "Hello [Name], I hope you're doing well. I've been following your career journey at [Company] with great interest. I'm currently exploring opportunities in [Industry] and would value your insights, given your experience. Would you be willing to spare 15-20 minutes for a virtual coffee chat to discuss your experience at [Company] and any advice you might have for someone looking to enter this field? I promise to be respectful of your time. Thank you for considering my request."
   },
   {
-    id: "entry-level",
-    name: "Entry Level Position",
-    description: "Perfect for recent graduates or career changers",
-    content: "I'm applying for the [Position] role at [Company]. As a recent graduate in [Field] with [Relevant Experience/Internship], I've developed strong skills in [Key Skill] and [Key Skill]. I'm particularly drawn to [Company] because [Company-Specific Reason], and I'm eager to contribute my fresh perspective and enthusiasm to your team while continuing to grow professionally."
+    id: "recommendation",
+    name: "Recommendation Request",
+    description: "Asking for a LinkedIn recommendation",
+    content: "Hi [Name], I hope this message finds you well. We worked together on [Project/Team] at [Company], and I really valued your leadership and insights during that time. As I'm updating my profile, I'm wondering if you would be willing to write a brief recommendation highlighting our work together. I'd be happy to reciprocate as well. Thank you for considering my request."
   }
 ];
 
@@ -124,15 +125,15 @@ const MessageGenerator = () => {
           const template = MESSAGE_TEMPLATES.find(t => t.id === selectedTemplate) || MESSAGE_TEMPLATES[0];
           
           // Generate a message based on the template
-          const sampleMessage = `Dear Hiring Manager,
+          const sampleMessage = `Hi Sarah Johnson,
 
-I'm excited to apply for the Software Engineer position at Verifirm SA. After reviewing your job description, I believe my experience aligns well with what you're seeking.
+I noticed your profile while browsing the Product Management group on LinkedIn. I'm impressed by your experience leading digital product teams at TechSolutions, and would love to connect to learn more about your work in agile product development methodologies.
 
-With 5 years of experience in full-stack development and a track record of delivering scalable solutions, I've successfully led the development of user-facing applications that increased customer engagement by 45%. Your company's focus on combining transparency with innovative AI tools particularly resonates with me, as I've worked extensively with AI-driven solutions in my previous role at TechSolutions SA.
+I've recently completed a successful product launch that increased user engagement by 45% using the framework you discussed in your recent article about customer-centric design. I believe we share similar approaches to product development.
 
-I'd welcome the opportunity to discuss how my technical expertise and passion for creating impactful applications could contribute to Verifirm's mission of transforming how people make career decisions in South Africa.
+Would love to exchange ideas sometime if you're open to it.
 
-Best regards,
+Thanks for considering my connection request,
 [Your Name]`;
           
           setGeneratedMessage(sampleMessage);
@@ -172,15 +173,15 @@ Best regards,
           setIsGenerating(false);
           
           // Generate a slightly different message
-          const altMessage = `Dear Hiring Manager,
+          const altMessage = `Hello Sarah Johnson,
 
-I'm writing to express my interest in the Software Engineer position at Verifirm SA. Your job posting caught my attention, and I'm confident that my background makes me a strong candidate.
+I came across your profile while researching product management leaders in the tech industry. Your work at TechSolutions, particularly your leadership in launching the mobile-first strategy, really stands out to me.
 
-During my 5 years in the software development industry, I've specialized in building responsive web applications and implementing efficient backend systems that improved user retention by 38%. I'm particularly drawn to Verifirm's innovative approach to career transparency in the South African market, which aligns perfectly with my belief in using technology to solve real-world problems.
+As someone with a keen interest in product development methodologies, I've been implementing some of the user-centered design principles you've advocated for in your articles. Recently, I led a product redesign that resulted in a 38% increase in user retention using similar approaches.
 
-I would be thrilled to discuss how my expertise in React, Node.js, and AI integration could help advance Verifirm's mission of transforming the job search experience.
+I'm looking to expand my professional network with innovative product leaders like yourself, and would be grateful for the connection.
 
-Thank you for your consideration,
+Looking forward to potentially exchanging ideas,
 [Your Name]`;
           
           setGeneratedMessage(altMessage);
@@ -203,8 +204,11 @@ Thank you for your consideration,
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl">Message Generator</CardTitle>
-              <CardDescription>Create personalized messages for job applications</CardDescription>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Linkedin className="h-5 w-5 text-[#0a66c2]" />
+                LinkedIn Message Generator
+              </CardTitle>
+              <CardDescription>Create personalized LinkedIn messages that get responses</CardDescription>
             </div>
             <Badge variant="outline" className="px-3 py-1 gap-1">
               <MessageSquare className="h-3.5 w-3.5" />
@@ -244,7 +248,7 @@ Thank you for your consideration,
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Choose a template that best fits the type of position you're applying for
+                  Choose a template that matches your LinkedIn outreach goal
                 </p>
               </motion.div>
 
@@ -258,26 +262,29 @@ Thank you for your consideration,
                       {MESSAGE_TEMPLATES.find(t => t.id === selectedTemplate)?.content || ''}
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
-                      The AI will customize this template using your resume and the job description
+                      The AI will customize this template using the profile details and your connection goals
                     </p>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
 
               <motion.div variants={itemVariants} className="space-y-2">
-                <h3 className="text-sm font-medium">Job Description</h3>
+                <h3 className="text-sm font-medium">LinkedIn Profile / Job Description</h3>
                 <Textarea 
-                  placeholder="Paste the job description here..." 
+                  placeholder="Paste the LinkedIn profile content or job description here..." 
                   className="min-h-24"
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Copy relevant details from the person's profile or job posting
+                </p>
               </motion.div>
 
               <motion.div variants={itemVariants} className="space-y-2">
-                <h3 className="text-sm font-medium">Your Resume Content</h3>
+                <h3 className="text-sm font-medium">Your Background & Connection Goal</h3>
                 <Textarea 
-                  placeholder="Paste your resume content here..." 
+                  placeholder="Describe your background and why you want to connect..." 
                   className="min-h-32"
                   value={resumeContent}
                   onChange={(e) => setResumeContent(e.target.value)}
@@ -287,10 +294,10 @@ Thank you for your consideration,
                     variant="outline" 
                     size="sm"
                     className="text-xs gap-1"
-                    onClick={() => {/* Would connect to resume optimizer */}}
+                    onClick={() => {/* Would connect to resume import */}}
                   >
                     <FileText className="h-3.5 w-3.5" />
-                    Use Optimized Resume
+                    Use Resume Details
                   </Button>
                   <Button 
                     variant="outline" 
@@ -299,7 +306,7 @@ Thank you for your consideration,
                     onClick={() => {/* Would open file picker */}}
                   >
                     <Clipboard className="h-3.5 w-3.5" />
-                    Import from File
+                    Import From File
                   </Button>
                 </div>
               </motion.div>
@@ -312,11 +319,11 @@ Thank you for your consideration,
                   onClick={handleGenerate}
                 >
                   {isGenerating ? (
-                    <>Generating your message...</>
+                    <>Generating your LinkedIn message...</>
                   ) : (
                     <>
                       <Sparkles className="h-4 w-4" />
-                      Generate Message
+                      Generate LinkedIn Message
                     </>
                   )}
                 </Button>
@@ -327,21 +334,21 @@ Thank you for your consideration,
               {isGenerating ? (
                 <motion.div variants={itemVariants} className="space-y-4">
                   <div className="flex justify-between text-sm">
-                    <span>Generating personalized message...</span>
+                    <span>Generating personalized LinkedIn message...</span>
                     <span>{Math.round(progress)}%</span>
                   </div>
                   <Progress value={progress} className="h-2" />
                   <p className="text-xs text-muted-foreground">
-                    {progress < 30 ? "Analyzing job description and resume..." : 
-                     progress < 60 ? "Identifying key skills and experiences..." : 
-                     progress < 90 ? "Crafting personalized message..." : 
-                     "Finalizing your message..."}
+                    {progress < 30 ? "Analyzing profile and connection goals..." : 
+                     progress < 60 ? "Identifying common interests and opportunities..." : 
+                     progress < 90 ? "Crafting personalized LinkedIn message..." : 
+                     "Polishing your message for maximum impact..."}
                   </p>
                 </motion.div>
               ) : generatedMessage ? (
                 <motion.div variants={itemVariants} className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-medium">Your Personalized Message</h3>
+                    <h3 className="font-medium">Your LinkedIn Message</h3>
                     <div className="flex gap-2">
                       <Button 
                         variant="outline" 
@@ -402,11 +409,11 @@ Thank you for your consideration,
                   className="flex flex-col items-center justify-center py-16 text-center space-y-4"
                 >
                   <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
-                    <MessageSquare className="h-8 w-8 text-muted-foreground" />
+                    <Linkedin className="h-8 w-8 text-[#0a66c2]" />
                   </div>
                   <h3 className="text-lg font-medium">No message generated yet</h3>
                   <p className="text-muted-foreground max-w-md">
-                    Enter your job description and resume content, then click "Generate Message" to create a personalized application message
+                    Enter a LinkedIn profile or job description and your connection goals, then click "Generate LinkedIn Message"
                   </p>
                   <Button 
                     variant="outline" 
@@ -433,7 +440,7 @@ Thank you for your consideration,
           <div className="w-full h-px bg-border"></div>
           <div className="flex justify-between items-center w-full text-sm">
             <p className="text-muted-foreground">
-              Generate personalized application messages based on your resume and job descriptions
+              Generate personalized LinkedIn messages that increase your connection acceptance rate
             </p>
             <Button variant="outline" size="sm" className="h-8">
               Get more messages
