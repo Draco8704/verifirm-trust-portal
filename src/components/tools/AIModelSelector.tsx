@@ -1,9 +1,9 @@
 
 import { useState } from "react";
-import { Check, ChevronDown, Info, Command } from "lucide-react";
+import { Check, ChevronDown, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  Command as CommandPrimitive,
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -78,14 +78,11 @@ const AIModelSelector = ({ onSelect, selectedModel }: AIModelSelectorProps) => {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[400px] p-0 bg-white border border-neutral-200 shadow-md rounded-lg overflow-hidden">
-          <div className="px-3 py-2 border-b border-neutral-100 bg-neutral-50 flex items-center">
-            <Command className="h-4 w-4 text-neutral-400 mr-2" />
+          <Command>
             <CommandInput 
               placeholder="Search AI models..." 
-              className="border-0 focus:ring-0 focus-visible:ring-0 bg-transparent text-sm" 
+              className="border-0 focus:ring-0 focus-visible:ring-0 h-9 text-sm" 
             />
-          </div>
-          <CommandPrimitive>
             <CommandEmpty className="py-6 text-center text-sm text-neutral-500">
               No AI model found.
             </CommandEmpty>
@@ -93,11 +90,12 @@ const AIModelSelector = ({ onSelect, selectedModel }: AIModelSelectorProps) => {
               {models.map((model) => (
                 <CommandItem
                   key={model.id}
+                  value={model.id}
                   onSelect={() => {
                     onSelect(model.id);
                     setOpen(false);
                   }}
-                  className="flex flex-col items-start py-3 px-4 hover:bg-neutral-50 data-[selected]:bg-neutral-50 cursor-pointer"
+                  className="flex flex-col items-start py-3 px-4 hover:bg-neutral-50 cursor-pointer"
                 >
                   <div className="flex w-full justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -126,7 +124,7 @@ const AIModelSelector = ({ onSelect, selectedModel }: AIModelSelectorProps) => {
             <div className="p-3 text-xs text-neutral-500 border-t border-neutral-100 bg-neutral-50">
               Each AI model has different strengths. Select the one that best fits your resume and target job.
             </div>
-          </CommandPrimitive>
+          </Command>
         </PopoverContent>
       </Popover>
     </div>
